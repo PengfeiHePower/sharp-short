@@ -155,9 +155,10 @@ model = model.cuda()
 criterion = torch.nn.CrossEntropyLoss()
 test_criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(params=model.parameters(), lr=args.lr, weight_decay=5e-4, momentum=0.9)
+scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[80, 120, 160], gamma=0.1)
 
 for epoch in range(args.epoch):
-    adjust_learning_rate(optimizer, args.lr, epoch, all_epoch=args.epoch)
+    # adjust_learning_rate(optimizer, args.lr, epoch, all_epoch=args.epoch)
 
     # Train
     model.train()
@@ -183,6 +184,7 @@ for epoch in range(args.epoch):
 
         acc_meter.update(acc)
         loss_meter.update(loss.item())
+    scheduler.step()
 
     print('Epoch %d, '%epoch, "Train acc %.2f loss: %.2f" % (acc_meter.avg*100, loss_meter.avg), end=' ')
 
